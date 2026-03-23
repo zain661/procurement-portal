@@ -20,18 +20,19 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
-      - name: Configure Docker for GCR
-        run: gcloud auth configure-docker
+      - name: Configure Docker
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Build and push backend image
         run: |
-          docker build -f backend/Dockerfile -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/backend:${{ github.sha }} .
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/backend:${{ github.sha }}
+          docker build -f backend/Dockerfile \
+            -t us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/docker-repo/backend:${{ github.sha }} .
+          docker push us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/docker-repo/backend:${{ github.sha }}
 
       - name: Deploy backend to Cloud Run
         run: |
           gcloud run deploy backend \
-            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/backend:${{ github.sha }} \
+            --image us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/docker-repo/backend:${{ github.sha }} \
             --platform managed \
             --region us-central1 \
             --allow-unauthenticated \
@@ -62,20 +63,21 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
-      - name: Configure Docker for GCR
-        run: gcloud auth configure-docker
+      - name: Configure Docker
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Build and push frontend image
         env:
           NX_IGNORE_UNSUPPORTED_TS_SETUP: true
         run: |
-          docker build -f frontend/Dockerfile -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/frontend:${{ github.sha }} .
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/frontend:${{ github.sha }}
+          docker build -f frontend/Dockerfile \
+            -t us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/docker-repo/frontend:${{ github.sha }} .
+          docker push us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/docker-repo/frontend:${{ github.sha }}
 
       - name: Deploy frontend to Cloud Run
         run: |
           gcloud run deploy frontend \
-            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/frontend:${{ github.sha }} \
+            --image us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/docker-repo/frontend:${{ github.sha }} \
             --platform managed \
             --region us-central1 \
             --allow-unauthenticated
