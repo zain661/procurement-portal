@@ -8,7 +8,9 @@
   "targets": {
     "build": {
       "executor": "@angular/build:application",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/frontend",
         "browser": "frontend/src/main.ts",
@@ -20,10 +22,18 @@
             "input": "frontend/public"
           }
         ],
-        "styles": ["frontend/src/styles.scss"]
+        "styles": [
+          "frontend/src/styles.scss"
+        ]
       },
       "configurations": {
         "production": {
+          "fileReplacements": [
+            {
+              "replace": "frontend/src/environments/environment.ts",
+              "with": "frontend/src/environments/environment.prod.ts"
+            }
+          ],
           "budgets": [
             {
               "type": "initial",
