@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map, mergeMap } from 'rxjs/operators';
@@ -17,6 +17,10 @@ import {
 
 @Injectable()
 export class ItemsEffects {
+  private actions$ = inject(Actions);
+  private http = inject(HttpClient);
+  private authService = inject(AuthService);
+
   private apiUrl = environment.apiUrl;
 
   private getHeaders(): HttpHeaders {
@@ -35,7 +39,7 @@ export class ItemsEffects {
           .pipe(
             map((items) => loadItemsSuccess({ items })),
             catchError((error) =>
-              of(loadItemsFailure({ error: error.message }))
+              of(loadItemsFailure({ error: (error as Error).message }))
             )
           )
       )
@@ -53,16 +57,10 @@ export class ItemsEffects {
           .pipe(
             map((newItem) => createItemSuccess({ item: newItem })),
             catchError((error) =>
-              of(createItemFailure({ error: error.message }))
+              of(createItemFailure({ error: (error as Error).message }))
             )
           )
       )
     )
   );
-
-  constructor(
-    private actions$: Actions,
-    private http: HttpClient,
-    private authService: AuthService
-  ) {}
 }
