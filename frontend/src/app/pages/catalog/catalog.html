@@ -1,0 +1,116 @@
+<div class="catalog-container">
+  <header class="header">
+    <div class="header-left">
+      <h1>Procurement Portal</h1>
+      <span class="welcome">Welcome, {{ user?.name }}</span>
+    </div>
+    <div class="header-right">
+      <button class="btn-add" (click)="showCreateForm = !showCreateForm">
+        {{ showCreateForm ? 'Cancel' : '+ New Item' }}
+      </button>
+      <button class="btn-signout" (click)="signout()">Sign Out</button>
+    </div>
+  </header>
+
+  @if (showCreateForm) {
+    <div class="create-form-container">
+      <h2>Create New Item</h2>
+      <form [formGroup]="createForm" (ngSubmit)="onCreateSubmit()">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="titleInput">Title</label>
+            <input id="titleInput" type="text" formControlName="title" placeholder="Item title" />
+            @if (createForm.get('title')?.touched && createForm.get('title')?.invalid) {
+              <span class="field-error">Title is required</span>
+            }
+          </div>
+          <div class="form-group">
+            <label for="categorySelect">Category</label>
+            <select id="categorySelect" formControlName="category">
+              <option value="">Select category</option>
+              @for (cat of categories; track cat) {
+                <option [value]="cat">{{ cat }}</option>
+              }
+            </select>
+            @if (createForm.get('category')?.touched && createForm.get('category')?.invalid) {
+              <span class="field-error">Category is required</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="priceInput">Price ($)</label>
+            <input id="priceInput" type="number" formControlName="price" placeholder="0.00" />
+            @if (createForm.get('price')?.touched && createForm.get('price')?.invalid) {
+              <span class="field-error">Valid price is required</span>
+            }
+          </div>
+          <div class="form-group">
+            <label for="descInput">Description</label>
+            <input id="descInput" type="text" formControlName="description" placeholder="Item description" />
+            @if (createForm.get('description')?.touched && createForm.get('description')?.invalid) {
+              <span class="field-error">Description must be at least 10 characters</span>
+            }
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit" [disabled]="createLoading">
+          {{ createLoading ? 'Creating...' : 'Create Item' }}
+        </button>
+      </form>
+    </div>
+  }
+
+  <div class="search-container">
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Search by title, category or description..."
+      [(ngModel)]="searchQuery"
+    />
+  </div>
+
+  @if (loading$ | async) {
+    <div class="state-container">
+      <div class="spinner"></div>
+      <p>Loading items...</p>
+    </div>
+  } @else if (error$ | async; as error) {
+    <div class="state-container error">
+      <p>⚠️ {{ error }}</p>
+      <button (click)="ngOnInit()">Retry</button>
+    </div>
+  } @else {
+    @if (items$ | async; as items) {
+      @let filtered = filterItems(items);
+
+      @if (filtered.length === 0) {
+        <div class="state-container">
+          <p>{{ searchQuery ? 'No items match your search.' : 'No items yet. Create your first item!' }}</p>
+        </div>
+      } @else {
+        <div class="items-grid">
+          @for (item of filtered; track item.id || item.title) {
+            <div class="item-card">
+              <div class="item-header">
+                <span class="item-category">{{ item.category }}</span>
+                <span class="item-price">${{ item.price }}</span>
+              </div>
+              <h3 class="item-title">{{ item.title }}</h3>
+              <p class="item-description">{{ item.description }}</p>
+              <div class="item-footer">
+                <span class="item-author">
+                  By {{ item.createdBy?.name || 'Unknown' }}
+                </span>
+                <span class="item-date">
+                  {{ item.createdAt | date: 'MMM d, y' }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+  }
+</div> 
