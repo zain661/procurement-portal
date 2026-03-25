@@ -4,11 +4,7 @@ import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormsModule } 
 import { Store } from '@ngrx/store';
 import { AuthService } from '../../core/services/auth.service';
 import { loadItems, createItem } from '../../store/items.actions';
-import {
-  selectAllItems,
-  selectItemsLoading,
-  selectItemsError,
-} from '../../store/items.selectors';
+import { selectAllItems, selectItemsLoading, selectItemsError} from '../../store/items.selectors';
 
 @Component({
   selector: 'app-catalog',

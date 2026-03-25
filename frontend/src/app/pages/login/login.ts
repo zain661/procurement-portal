@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
@@ -38,8 +37,10 @@ export class LoginComponent {
       next: (res) => {
         this.authService.saveSession(res.token, res.user);
         this.router.navigate(['/catalog']);
+        this.loading = false;
       },
       error: (err) => {
+        console.log(err); 
         this.error = err.error?.message || 'Login failed';
         this.loading = false;
       },
